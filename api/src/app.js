@@ -8,7 +8,6 @@ const dbHost = "db";
 
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded());
 app.use(cors());
 
 // Function to create response object

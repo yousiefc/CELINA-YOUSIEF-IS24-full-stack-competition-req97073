@@ -14,14 +14,13 @@ import FormLabel from '@mui/material/FormLabel';
 import './components.css';
 
 import axios from "axios";
+import { validateForm } from '../utils/util';
 import { FormHelperText } from '@mui/material';
 
 // Dialog popup to edit an existing product
 function EditProductDialog({ row, setRefresh, refresh }) {
     const [open, setOpen] = React.useState(false);
-    const [fieldError, setFieldError] = React.useState("");
-    const [submitError, setSubmitError] = React.useState("");
-    const [developerError, setDeveloperError] = React.useState("");
+    const [error, setError] = React.useState("");
     const [prodName, setProdName] = React.useState(row.productName);
     const [scrumMaster, setScrumMaster] = React.useState(row.scrumMasterName);
     const [prodOwner, setProdOwner] = React.useState(row.productOwnerName);
@@ -29,9 +28,7 @@ function EditProductDialog({ row, setRefresh, refresh }) {
     const [methodology, setMethodology] = React.useState(row.methodology);
 
     const clearFormHooks = () => {
-        setFieldError("");
-        setSubmitError("");
-        setDeveloperError("");
+        setError("");
         setProdName("");
         setScrumMaster("");
         setProdOwner("");
@@ -51,14 +48,17 @@ function EditProductDialog({ row, setRefresh, refresh }) {
     // Handle all calls required to save
     const handleSave = () => {
         try {
-            if (validateForm()) {
+            const errors = validateForm(prodName, scrumMaster, prodOwner, row.startDate, methodology, developers);
+            if (errors === "") {
                 submitEdit(createProductObject());
                 setRefresh(!refresh);
                 handleClose();
+            } else {
+                setError(errors);
             }
         } catch (error) {
             console.log(error);
-            setSubmitError(error);
+            setError(error);
         }
     };
 
@@ -82,19 +82,6 @@ function EditProductDialog({ row, setRefresh, refresh }) {
         };
         return result;
     };
-
-    // Validates that all fields are filled out correctly
-    const validateForm = () => {
-        if (!prodName || !scrumMaster || !prodOwner || !methodology || developers.length === 0) {
-            setFieldError("Please fill out all fields");
-            return false;
-        } else if (developers.length > 5) {
-            setDeveloperError("Please input no more than 5 developers");
-            return false;
-        } else {
-            return true;
-        }
-    }
 
     return (
         <div>
@@ -149,7 +136,6 @@ function EditProductDialog({ row, setRefresh, refresh }) {
                         value={developers}
                         onChange={(e) => setDevelopers(e.target.value.split(','))}
                     />
-                    <FormHelperText>{developerError}</FormHelperText>
                     <FormControl>
                         <FormLabel id="demo-radio-buttons-group-label">Methodology</FormLabel>
                         <RadioGroup
@@ -162,8 +148,7 @@ function EditProductDialog({ row, setRefresh, refresh }) {
                             <FormControlLabel value="Waterfall" control={<Radio />} label="Waterfall" />
                         </RadioGroup>
                     </FormControl>
-                    <FormHelperText>{submitError}</FormHelperText>
-                    <FormHelperText>{fieldError}</FormHelperText>
+                    <FormHelperText>{error}</FormHelperText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>

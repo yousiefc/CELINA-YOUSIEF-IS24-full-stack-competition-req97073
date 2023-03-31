@@ -30,6 +30,8 @@ function EditProductDialog({ row, setRefresh, refresh }) {
 
     const clearFormHooks = () => {
         setFieldError("");
+        setSubmitError("");
+        setDeveloperError("");
         setProdName("");
         setScrumMaster("");
         setProdOwner("");

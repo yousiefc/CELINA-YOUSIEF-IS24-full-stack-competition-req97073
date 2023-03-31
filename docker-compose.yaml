@@ -1,0 +1,29 @@
+version: "3"
+services:
+    db:
+        container_name: db
+        image: json-server-image
+        build: ./db
+        ports:
+            - "5000:3000"
+        volumes:
+            - ./db/db.json:/data/db.json
+        command: json-server --id productId --watch /data/db.json --host 0.0.0.0
+
+    api:
+        container_name: api
+        image: express-api-image
+        build: ./api
+        restart: always
+        environment:
+            - DB_HOST=db
+        ports:
+            - "3000:3000"
+
+    client:
+        container_name: client
+        image: react-client-image
+        build: ./client
+        ports:
+            - "4000:3000"
+        stdin_open: true

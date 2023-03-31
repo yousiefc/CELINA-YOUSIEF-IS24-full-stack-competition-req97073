@@ -8,6 +8,7 @@ const dbHost = "db";
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded());
 app.use(cors());
 
 // Function to create response object
@@ -38,7 +39,7 @@ app.get("/api/product", async (req, res) => {
 * @param {productId}
 * @returns the request body, status code and status message
 */
-app.get("/api/product/:productId", async (req, res) => {
+app.get("/api/product/productid/:productId", async (req, res) => {
     try {
         const resp = await axios.get(`http://${dbHost}:${dbPort}/products?productId=${req.params.productId}`);
         res.json(responseObject(resp));
@@ -52,9 +53,9 @@ app.get("/api/product/:productId", async (req, res) => {
 * @param {scrumMaster}
 * @returns the request body, status code and status message
 */
-app.get("/api/product/:scrumMaster", async (req, res) => {
+app.get("/api/product/scrummaster/:scrumMaster", async (req, res) => {
     try {
-        const resp = await axios.get(`http://${dbHost}:${dbPort}/products?scrumMasterName=${req.params.scrumMaster}`);
+        const resp = await axios.get(`http://${dbHost}:${dbPort}/products?scrumMasterName_like=${req.params.scrumMaster}`);
         res.json(responseObject(resp));
     } catch (error) {
         console.error(`Error: ${error} response ${res.statusCode}`);
